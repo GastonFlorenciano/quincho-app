@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Reserva {
+  id                  String   @id @default(uuid())
+  fecha               DateTime
+  turno               Turno
+  incluyeSegundoSalon Boolean
+  nombre              String
+  apellido            String
+  telefono            String
+  precioTotal         Int
+  estado              Estado
+  metodoPago          MetodoPago
+  createdAt           DateTime @default(now())
+}
+
+enum Turno {
+  MANANA
+  NOCHE
+  COMPLETO
+}
+
+enum Estado {
+  PENDIENTE
+  PAGADO
+  EFECTIVO
+  CANCELADO
+  EXPIRADO
+}
+
+enum MetodoPago {
+  MERCADOPAGO
+  EFECTIVO
+}
