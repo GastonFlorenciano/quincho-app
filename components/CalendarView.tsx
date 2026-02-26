@@ -3,83 +3,57 @@
 import { ChevronLeft, ChevronRight, Calendar as CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 import dayjs from 'dayjs';
+import 'dayjs/locale/es';
+dayjs.locale('es');
 
-interface CalendarViewProps {
-  onDateSelect: (date: Date) => void;
-  disponibilidadPorFecha: Record<string, any>;
-}
-
-export default function CalendarView({ onDateSelect, disponibilidadPorFecha }: CalendarViewProps) {
+export default function CalendarView({ onDateSelect, disponibilidadPorFecha }: any) {
   const [currentMonth, setCurrentMonth] = useState(dayjs());
   const today = dayjs().startOf('day');
-
-  const daysInMonth = currentMonth.daysInMonth();
-  const startingDayOfWeek = currentMonth.startOf('month').day();
-
-  const handleDateClick = (day: number) => {
-    const selected = currentMonth.date(day).startOf('day');
-    if (selected >= today) {
-      onDateSelect(selected.toDate());
-    }
-  };
-
-  const emptyDays = Array(startingDayOfWeek).fill(null);
-  const days = Array.from({ length: daysInMonth }, (_, i) => i + 1);
+  const emptyDays = Array(currentMonth.startOf('month').day()).fill(null);
+  const days = Array.from({ length: currentMonth.daysInMonth() }, (_, i) => i + 1);
 
   return (
-    <div className="py-5 px-4">
-      <div className="max-w-md mx-auto">
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-600 rounded-2xl mb-4 shadow-lg">
-            <CalendarIcon className="w-8 h-8 text-white" />
-          </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Reserva tu Quincho</h1>
-          <p className="text-gray-600">Selecciona una fecha disponible</p>
+    <div className="bg-white rounded-3xl shadow-xl border border-orange-500 overflow-hidden flex flex-col h-[420px]">
+      {/* Cabecera Centrada */}
+      <div className="p-4 bg-orange-50 border-b border-orange-100 flex items-center justify-center gap-2">
+        <CalendarIcon className="w-5 h-5 text-orange-600" />
+        <h2 className="text-lg font-bold text-gray-800">Reserva tu fecha</h2>
+      </div>
+
+      <div className="p-6 flex-1 flex flex-col">
+        <div className="flex items-center justify-between mb-4">
+          <button onClick={() => setCurrentMonth(currentMonth.subtract(1, 'month'))} className="p-1 text-orange-600 hover:bg-orange-100 rounded-full transition-colors"><ChevronLeft /></button>
+          <span className="font-bold text-gray-800 capitalize">{currentMonth.format('MMMM YYYY')}</span>
+          <button onClick={() => setCurrentMonth(currentMonth.add(1, 'month'))} className="p-1 text-orange-600 hover:bg-orange-100 rounded-full transition-colors"><ChevronRight /></button>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl p-6 border border-orange-100">
-          <div className="flex items-center justify-between mb-6">
-            <button onClick={() => setCurrentMonth(currentMonth.subtract(1, 'month'))} className="p-2 hover:bg-orange-50 rounded-xl transition-colors">
-              <ChevronLeft className="w-5 h-5 text-orange-600" />
-            </button>
-            <h2 className="text-xl font-semibold text-gray-900 capitalize">
-              {currentMonth.format('MMMM YYYY')}
-            </h2>
-            <button onClick={() => setCurrentMonth(currentMonth.add(1, 'month'))} className="p-2 hover:bg-orange-50 rounded-xl transition-colors">
-              <ChevronRight className="w-5 h-5 text-orange-600" />
-            </button>
-          </div>
+        <div className="grid grid-cols-7 mb-2">
+          {['D', 'L', 'M', 'M', 'J', 'V', 'S'].map((d, index) => (
+            <div key={`${d}-${index}`} className="text-center text-[10px] font-bold text-orange-300">
+              {d}
+            </div>
+          ))}
+        </div>
 
-          <div className="grid grid-cols-7 gap-2">
-            {['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'].map(d => (
-              <div key={d} className="text-center text-xs font-bold text-gray-400 py-2">{d}</div>
-            ))}
-            {emptyDays.map((_, i) => <div key={`e-${i}`} />)}
-            {days.map(day => {
-              const dateObj = currentMonth.date(day).startOf('day');
-              const dateStr = dateObj.format('YYYY-MM-DD');
-              const isPast = dateObj.isBefore(today);
-              
-              // Lógica de disponibilidad de tu backend
-              const disp = disponibilidadPorFecha[dateStr] || { MANANA: true, NOCHE: true, COMPLETO: true };
-              const isFull = !disp.MANANA && !disp.NOCHE && !disp.COMPLETO;
+        <div className="grid grid-cols-7 gap-1 flex-1 content-start h-64">
+          {emptyDays.map((_, i) => <div key={i} />)}
+          {days.map(day => {
+            const dateObj = currentMonth.date(day).startOf('day');
+            const dateStr = dateObj.format('YYYY-MM-DD');
+            const disp = disponibilidadPorFecha[dateStr] || { MANANA: true, NOCHE: true, COMPLETO: true };
+            const isFull = !disp.MANANA && !disp.NOCHE && !disp.COMPLETO;
+            const isPast = dateObj.isBefore(today);
 
-              return (
-                <button
-                  key={day}
-                  disabled={isPast || isFull}
-                  onClick={() => onDateSelect(dateObj.toDate())}
-                  className={`aspect-square rounded-xl flex flex-col items-center justify-center text-sm font-medium transition-all
-                    ${isPast || isFull ? 'text-gray-300 cursor-not-allowed bg-gray-50' : 'text-gray-700 hover:bg-orange-100 hover:scale-105'}
-                    ${dateObj.isSame(today, 'day') ? 'border-2 border-orange-500' : ''}
-                  `}
-                >
-                  {day}
-                  {!isPast && isFull && <span className="text-[8px] text-red-400 uppercase font-bold">Lleno</span>}
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button key={day} disabled={isPast || isFull} onClick={() => onDateSelect(dateObj.toDate())}
+                className={`aspect-square rounded-lg flex flex-col items-center justify-center text-xs font-bold transition-all relative
+                            ${isPast || isFull ? 'text-gray-300 bg-gray-50' : 'text-gray-700 bg-orange-200 hover:bg-orange-600 hover:text-white'}
+                            ${dateObj.isSame(today, 'day') ? 'ring-2 ring-orange-600' : ''}`}>
+                {day}
+                {!isPast && isFull && <span className="absolute bottom-1 text-[5px] text-red-500 font-bold uppercase">Agotado</span>}
+              </button>
+            );
+          })}
         </div>
       </div>
     </div>

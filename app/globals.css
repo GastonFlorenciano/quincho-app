@@ -24,3 +24,11 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* app/globals.css */
+
+@layer utilities {
+  .font-navbar {
+    font-family: var(--font-navBar), cursive;
+  }
+}

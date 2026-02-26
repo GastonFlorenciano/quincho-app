@@ -1,34 +1,49 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import dayjs from "dayjs";
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
-  const fecha = searchParams.get("fecha");
+  const mes = searchParams.get("mes");
+  const anio = searchParams.get("anio");
 
-  if (!fecha) return NextResponse.json({ error: "Falta fecha" }, { status: 400 });
+  if (!mes || !anio) {
+    return NextResponse.json({ error: "Faltan parámetros de mes o año" }, { status: 400 });
+  }
+
+  // Creamos el rango del mes para buscar todas las reservas de una sola vez
+  const fechaInicio = dayjs(`${anio}-${mes}-01`).startOf('month').toDate();
+  const fechaFin = dayjs(fechaInicio).endOf('month').toDate();
 
   const reservas = await prisma.reserva.findMany({
-    where: { fecha: new Date(fecha) }
+    where: {
+      fecha: {
+        gte: fechaInicio,
+        lte: fechaFin
+      }
+    }
   });
 
-  let disponibilidad = {
-    MANANA: true,
-    NOCHE: true,
-    COMPLETO: true
-  };
+  // Agrupamos la disponibilidad por fecha
+  const disponibilidad: Record<string, { MANANA: boolean; NOCHE: boolean; COMPLETO: boolean }> = {};
 
-  for (const r of reservas) {
-    if (r.turno === "COMPLETO") {
-      disponibilidad = { MANANA: false, NOCHE: false, COMPLETO: false };
-      break;
-    } else if (r.turno === "MANANA") {
-      disponibilidad.MANANA = false;
-      disponibilidad.COMPLETO = false;
-    } else if (r.turno === "NOCHE") {
-      disponibilidad.NOCHE = false;
-      disponibilidad.COMPLETO = false;
+  reservas.forEach(r => {
+    const fechaKey = dayjs(r.fecha).format("YYYY-MM-DD");
+    
+    if (!disponibilidad[fechaKey]) {
+      disponibilidad[fechaKey] = { MANANA: true, NOCHE: true, COMPLETO: true };
     }
-  }
+
+    if (r.turno === "COMPLETO") {
+      disponibilidad[fechaKey] = { MANANA: false, NOCHE: false, COMPLETO: false };
+    } else if (r.turno === "MANANA") {
+      disponibilidad[fechaKey].MANANA = false;
+      disponibilidad[fechaKey].COMPLETO = false;
+    } else if (r.turno === "NOCHE") {
+      disponibilidad[fechaKey].NOCHE = false;
+      disponibilidad[fechaKey].COMPLETO = false;
+    }
+  });
 
   return NextResponse.json(disponibilidad);
 }
