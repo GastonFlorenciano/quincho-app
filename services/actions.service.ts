@@ -1,4 +1,5 @@
 import axios from "./axios";
+import { prisma } from "../lib/prisma";
 
 /**
  * Obtiene la disponibilidad de turnos para un mes completo
@@ -36,4 +37,19 @@ export async function crearReserva(data: {
     console.error("Error creando reserva:", error);
     throw error;
   }
+}
+
+export async function obtenerTodasLasReservas() {
+    try {
+        // Buscamos todas las reservas ordenadas por fecha (las más nuevas primero)
+        const reservas = await prisma.reserva.findMany({
+            orderBy: {
+                fecha: 'desc',
+            },
+        });
+        return reservas;
+    } catch (error) {
+        console.error("Error al obtener reservas:", error);
+        return [];
+    }
 }

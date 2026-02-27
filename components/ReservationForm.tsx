@@ -78,7 +78,7 @@ export default function ReservationForm({ selectedDate, onBack, disponibilidad }
     // VISTA DE ÉXITO FINAL
     if (step === 'success') {
         return (
-            <div className="w-full h-[420px] bg-white rounded-3xl shadow-xl p-8 flex flex-col items-center justify-center border border-orange-500 animate-in zoom-in duration-300">
+            <div className="w-full h-[420px] bg-white rounded-3xl shadow-xl p-8 mt-16 flex flex-col items-center justify-center border border-orange-500 animate-in zoom-in duration-300">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
                     <Check className="text-green-600 w-8 h-8" />
                 </div>
@@ -170,7 +170,7 @@ export default function ReservationForm({ selectedDate, onBack, disponibilidad }
 
     // VISTA DEL FORMULARIO (Original, sin cambios estéticos salvo precios en select)
     return (
-        <div className="bg-white rounded-3xl shadow-xl border border-orange-500 overflow-hidden flex flex-col h-[420px] relative">
+        <div className="bg-white rounded-3xl shadow-xl border border-orange-500 overflow-hidden flex flex-col h-[420px] relative mt-16">
             <div className="p-4 bg-orange-50 border-b border-orange-100 flex items-center justify-center relative">
                 <button
                     onClick={onBack}
