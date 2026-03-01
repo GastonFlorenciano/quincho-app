@@ -13,7 +13,7 @@ export default function CalendarView({ onDateSelect, disponibilidadPorFecha }: a
   const days = Array.from({ length: currentMonth.daysInMonth() }, (_, i) => i + 1);
 
   return (
-    <div className="bg-white rounded-3xl shadow-xl border border-orange-500 overflow-hidden flex flex-col h-[420px] mt-16">
+    <div className="bg-white rounded-3xl shadow-xl border border-orange-500 overflow-hidden flex flex-col h-[400px] md:h-[420px] mt-16">
       {/* Cabecera Centrada */}
       <div className="p-4 bg-orange-50 border-b border-orange-100 flex items-center justify-center gap-2">
         <CalendarIcon className="w-5 h-5 text-orange-600" />

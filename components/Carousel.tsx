@@ -21,24 +21,20 @@ export default function Carousel() {
   const nextImg = () => setCurrentImg((prev) => (prev === images.length - 1 ? 0 : prev + 1));
 
   return (
-    <div className="w-full max-w-2xl h-[370px] flex flex-col items-center mb-4 animate-in fade-in duration-700">
+    <div className="w-full max-w-2xl h-[470px] md:h-[370px] flex flex-col items-center mb-4 animate-in fade-in duration-700">
       {/* Contenedor de la foto */}
-      <div className="relative w-full aspect-4/3 rounded-3xl overflow-hidden">
+      <div className="relative w-full aspect-4/3 rounded-3xl overflow-hidden h-full">
         
         {images.map((img, i) => (
            <div 
               key={i} 
-              className={`absolute inset-0 transition-opacity duration-500 ease-in-out ${i === currentImg ? 'opacity-100' : 'opacity-0'}`}
+              className={`absolute inset-0 transition-opacity duration-500 h-full ease-in-out ${i === currentImg ? 'opacity-100' : 'opacity-0'} flex justify-center items-center`}
             >
-              {/* Fallback visual */}
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-orange-50 text-orange-400 font-bold -z-10 p-4 text-center">
-                 Sube tu foto como <br/> <span className="text-orange-600">{img}</span> <br/> a la carpeta /public
-              </div>
               
               <img 
                 src={img} 
                 alt={`Quincho ${i+1}`} 
-                className="w-full h-full object-contain" 
+                className="w-fit md:h-full object-contain rounded-xl" 
               />
            </div>
         ))}
@@ -59,7 +55,7 @@ export default function Carousel() {
         </button>
 
         {/* Puntos indicadores */}
-        <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-2">
+        <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2">
           {images.map((_, i) => (
              <div 
                key={i} 

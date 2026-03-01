@@ -73,7 +73,7 @@ export default function Home() {
         </div>
 
         {/* 2. Sección de Reserva (Calendario y Formulario) */}
-        <div className="w-full max-w-sm relative mt-4">
+        <div className="w-full max-w-sm relative mt-16 md:mt-4 md:h-auto h-[570px]">
           <div
             className={`transition-all duration-500 ease-in-out transform ${!selectedDate
               ? 'opacity-100 translate-x-0 relative z-10'
