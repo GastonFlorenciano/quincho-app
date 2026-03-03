@@ -72,8 +72,22 @@ export async function POST(req: Request) {
     // 1. Formateamos la fecha linda
     const fechaFormat = new Date(fecha).toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' });
     
-    // 2. Limpiamos el teléfono (le sacamos espacios o guiones que haya puesto el cliente)
-    const telefonoLimpio = telefono.replace(/\D/g, '');
+    // 2. Limpiamos el teléfono 
+
+let telefonoLimpio = telefono.replace(/\D/g, ''); // Saca espacios, guiones, etc.
+
+if (!telefonoLimpio.startsWith('54')) {
+
+  if (telefonoLimpio.startsWith('0')) {
+    telefonoLimpio = telefonoLimpio.substring(1);
+  }
+
+  if (telefonoLimpio.startsWith('15')) {
+    telefonoLimpio = telefonoLimpio.substring(2);
+  }
+  
+  telefonoLimpio = `549${telefonoLimpio}`;
+}
 
     // 3. Creamos el mensaje pre-armado
     const mensajeAdmin = `¡Hola ${nombre}! Te hablo por la reserva del quincho. Te escribo para coordinar el pago para completar tu reserva.`;
